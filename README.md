@@ -1,4 +1,4 @@
-markdown_content = """# 👋 Hi, I'm Mihir Vetal
+# 👋 Hi, I'm Mihir Vetal
 
 ## 🚀 Transitioning from MERN Stack to AI Engineering 
 
@@ -59,7 +59,3 @@ Special thanks to my mentors, Chirag Jain and Akshay Saini, for the ongoing guid
 *Follow along as I push daily updates, node-based AI implementations, and open-source contributions!*
 """
 
-with open("README.md", "w", encoding="utf-8") as f:
-    f.write(markdown_content)
-
-print("README.md file generated successfully.")
