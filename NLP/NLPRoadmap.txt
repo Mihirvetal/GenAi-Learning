@@ -1,0 +1,93 @@
+
+This roadmap is designed to move you quickly through the basics and spend the most time on what actually gets you hired right now: LLMs, Transformers, and Retrieval systems.
+
+
+
+Phase 1: The Classical NLP Foundation (Weeks 1-2)
+Goal: Understand how text was processed before Deep Learning.
+
+1. Text Preprocessing & Cleaning (The Basics)
+
+Concepts: Tokenization (word/sentence), Stop Words removal, Stemming vs. Lemmatization, Regular Expressions (Regex) for text extraction.
+
+Key Libraries: NLTK, spaCy (highly recommended over NLTK for production).
+
+Project Idea: Build a script that takes a raw, messy Wikipedia article and outputs a clean, standardized list of meaningful root words.
+
+2. Traditional Feature Engineering (Text to Vectors)
+
+Concepts: Bag of Words (BoW), N-grams, TF-IDF (Term Frequency-Inverse Document Frequency).
+
+Key Libraries: scikit-learn (CountVectorizer, TfidfVectorizer).
+
+3. Classical Machine Learning with Text
+
+Concepts: Using traditional algorithms (Naive Bayes, Logistic Regression, SVM) on your TF-IDF vectors.
+
+Project Idea: Build a Spam/Ham classifier or a basic Sentiment Analysis tool (Positive/Negative review detector) using Naive Bayes.
+
+Phase 2: Word Embeddings & Deep Learning Basics (Weeks 3-4)
+Goal: Move from counting words to understanding the relationships and meanings between them.
+
+1. Word Embeddings (Dense Vectors)
+
+Concepts: Word2Vec (CBOW vs. Skip-gram), GloVe, FastText. Understand why dense embeddings are better than sparse TF-IDF matrices.
+
+Key Libraries: Gensim.
+
+2. Sequence Models (The Deep Learning transition)
+
+Concepts: Recurrent Neural Networks (RNNs), Long Short-Term Memory networks (LSTMs), and GRUs. Understand the concept of "vanishing gradients" and why LSTMs were created to fix them.
+
+Key Libraries: TensorFlow/Keras or PyTorch (highly recommend PyTorch for NLP).
+
+Project Idea: Build an LSTM model capable of generating the next word in a sentence or classifying the sentiment of a movie review based on sequence context.
+
+Phase 3: The Transformer Era (Weeks 5-7)
+Goal: Master the architecture that powers every modern LLM.
+
+1. The Attention Mechanism
+
+Concepts: Self-Attention, Multi-Head Attention. Read the famous paper "Attention Is All You Need". Understand how Attention solves the long-term memory issues of LSTMs.
+
+2. Transformer Architectures
+
+Concepts: Encoder-only models (BERT), Decoder-only models (GPT), Encoder-Decoder models (T5, BART).
+
+3. Working with Hugging Face
+
+Concepts: The transformers library, tokenizers (Byte-Pair Encoding), loading pre-trained models, creating inference pipelines.
+
+Project Idea: Use Hugging Face pipelines to perform Named Entity Recognition (NER), Text Summarization, and Question Answering out-of-the-box.
+
+Phase 4: Applied Generative AI & Fine-Tuning (Weeks 8-10)
+Goal: Adapt existing massive models to specific business problems.
+
+1. Fine-Tuning Models
+
+Concepts: Parameter-Efficient Fine-Tuning (PEFT), LoRA (Low-Rank Adaptation), QLoRA. How to fine-tune a model on a custom dataset without needing a supercomputer.
+
+2. Vector Databases & Embeddings at Scale
+
+Concepts: Sentence Transformers (creating embeddings for whole sentences/documents). Storing and querying vectors using Cosine Similarity.
+
+Key Tools: ChromaDB, Pinecone, FAISS.
+
+3. Retrieval-Augmented Generation (RAG)
+
+Concepts: Combining a Vector Database with an LLM. This is the most in-demand skill right now. You search a database for documents relevant to a user's prompt, and pass those documents to the LLM to generate an accurate answer.
+
+Key Libraries: LangChain, LlamaIndex.
+
+Project Idea: Build a custom chatbot that answers questions based on a specific PDF document (like a company policy manual) using LangChain and a vector database.
+
+Phase 5: Production & Advanced Topics (Weeks 11-12)
+Goal: Learn how to deploy models and manage AI agents.
+
+1. Deployment & APIs
+
+Concepts: Serving models via FastAPI, handling prompt engineering, managing API costs (OpenAI, Anthropic).
+
+2. AI Agents & Tool Calling
+
+Concepts: Building agents that can make decisions, call external APIs (like searching the web or querying a database), and chain multiple thoughts together.
