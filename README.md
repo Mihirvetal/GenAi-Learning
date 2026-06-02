@@ -2,7 +2,7 @@
 
 ## 🚀 Transitioning from MERN Stack to AI Engineering 
 
-I am a Full-Stack developer with 14 months of experience in the MERN stack, currently executing a rigorous roadmap to transition into a specialized AI Engineer role by December 2026. This repository serves as the central hub for tracking my daily progress, theoretical learnings, and end-to-end production-grade project implementations.
+I am a Full-Stack developer with 15 months of experience in the MERN stack, currently executing a rigorous roadmap to transition into a specialized AI Engineer role by December 2026. This repository serves as the central hub for tracking my daily progress, theoretical learnings, and end-to-end production-grade project implementations.
 
 ### 🧠 Core Engineering Strategy
 My learning approach is hybrid: I study the core data science mechanics and AI architectures (RAG, Multi-Agent Systems, Fine-Tuning) in Python—a language I have already mastered—and then implement these architectures directly into **Node.js/Express** using SDKs like `LangChain.js` and `LangGraph.js`. This strategy bridges the gap between AI research and scalable enterprise backend development.
