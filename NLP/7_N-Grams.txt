@@ -1,0 +1,17 @@
+n-grams = eg bigram,trigram
+
+s1 the foood is good                        food      not      good
+s2 the food is not good                   s1  1        0        1
+                                          s2 1         1        1
+
+bigram= bigram combination leta he like 
+   food not good , food good , food not,not good ,
+
+check this combination in the s1 and s2 and if its present then it will be 1 if not then 0
+
+
+wwill do this ngram with sklearn with ngram
+
+end of the vector ko efficiently array me dalta he vector me toh machine learning ache se train karta he
+
+
