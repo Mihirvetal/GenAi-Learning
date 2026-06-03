@@ -1,0 +1,8 @@
+ word2vec [cosine similarity,distance]
+
+ word2vec is a technique in nlp for obtaining vector representations of words. these vectors capture information about the meaning of the word based on the surroundings words. the word2vec algo estimates these representations by modeling text in a large corpus. once trained such a model can detect synonymous words or suggest additional words for a partial sentence, word2vec was developed by romas mikolov and collegues at google and published in 2013.                                                              - as per wikipedia
+
+
+ 
+
+

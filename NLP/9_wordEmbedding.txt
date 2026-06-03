@@ -1,0 +1,20 @@
+word embeddings = in nlp a word embeddiing is a representation of a word. the embedding is used in text analysis. typically the representation is a real valued vector that encodes meaning of the word in such a way that the words that are closer in the vector space are expected to be similar in meaning.
+
+we can do 
+word to vector
+sentence to vector
+
+types of word embedding
+
+- count or frequency
+    one hot embedding
+    bow
+    TF-IDF
+- deep learning trained model = convert word to vector
+    words to vector = feature represenattion
+    word2vec( to learn this u have knowledge of ANN,optimizers,loss function)
+        CBOW = continous bag of words
+        skipgram
+    
+
+
