@@ -7,5 +7,44 @@ topics will cover
 5 safety settings
 
 
+1: generation configuration is simple only like how we have the functions parameters so these are also same as that parameters like  these parameters will not change the function or model but its just define the model how to perform and behave so some parameters are there below.
+
+1. Temperature (Randomness)Temperature controls the randomness of the model's output token selection. Think of it as a "creativity" slider.Range: Typically 0.0 to 2.0Low Temperature (e.g., 0.1 to 0.3): The model becomes deterministic and focused. It will almost always choose the most highly probable next words. Best for: Coding, math, data extraction, and factual Q&A.High Temperature (e.g., 0.7 to 1.2): The model takes more risks, choosing less expected words. Best for: Creative writing, brainstorming, and roleplay.2. Top-P (Nucleus Sampling)Top-P changes how the model selects words based on their cumulative probability.Range: 0.0 to 1.0How it works: If you set top_p=0.9, the model looks at the pool of most likely next words and cuts off the bottom pool, keeping only the top words whose percentages add up to 90%. It then selects from only that group.Impact: Decreasing Top-P filters out the "long tail" of low-probability words, preventing the model from generating random gibberish or completely off-topic phrases.3. Top-KTop-K sets a strict limit on the absolute number of highest-probability words the model can choose from for its next token.Range: 1 to 500+ (or set to 0/unset to disable)How it works: If you set top_k=3, the model will only consider the top 3 absolute most likely words for the next token, discarding everything else regardless of how high their probability scores are.Impact: A low Top-K keeps the output highly safe and predictable, while a higher Top-K allows for more diverse vocabulary.4. Max Output TokensThis sets a hard ceiling on the length of the model's response.How it works: One token is roughly equal to 4 characters or 0.75 words.Impact: If you are building a chat application and want to save on API costs or prevent the model from writing long essays, you can restrict this (e.g., max_output_tokens=150).How to use them in the New SDKIn the new google.genai SDK, you import types from the library and build a configuration object to pass directly into your generation request.Here is a complete, working example showing how to configure these parameters in your Colab notebook:Pythonfrom google import genai
+from google.genai import types
+
+# 1. Initialize your client
+client = genai.Client(api_key="YOUR_GOOGLE_API_KEY")
+
+# 2. Define your configuration parameters
+creative_config = types.GenerateContentConfig(
+    temperature=0.9,       # Highly creative and expressive
+    top_p=0.95,            # Consider a wide pool of probable words
+    top_k=40,              # Choose from the top 40 words at each step
+    max_output_tokens=300  # Restrict response length to roughly 225 words
+)
+
+# 3. Pass the config object into your request
+response = client.models.generate_content(
+    model='gemini-2.5-flash',
+    contents='Write an unusual metaphor describing a software bug.',
+    config=creative_config # <--- Pass it right here
+)
+
+print(response.text)
+
+Summary in Table
++-------------------+------------------------------+------------------------------+------------------------------+
+| Parameter         | What it does                 | Lower values mean...         | Higher values mean...        |
++-------------------+------------------------------+------------------------------+------------------------------+
+| temperature       | Randomness/Creativity        | Predictable, factual, rigid  | Creative, diverse, risky     |
++-------------------+------------------------------+------------------------------+------------------------------+
+| top_p             | Cumulative probability pool  | Filters out uncommon words   | Allows unexpected vocabulary |
++-------------------+------------------------------+------------------------------+------------------------------+
+| top_k             | Fixed number pool limit      | Strict, limited word choice  | Richer, varied word choice   |
++-------------------+------------------------------+------------------------------+------------------------------+
+| max_output_tokens | Length constraint            | Short, snappy answers        | Long-form content/essays     |
++-------------------+------------------------------+------------------------------+------------------------------+
+
+
 
 
