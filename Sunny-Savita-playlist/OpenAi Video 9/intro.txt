@@ -4,7 +4,7 @@ topics will cover
 2 history
 3 token count
 4 embeddings
-5 safety settings
+5 safety setting
 
 
 1: generation configuration is simple only like how we have the functions parameters so these are also same as that parameters like  these parameters will not change the function or model but its just define the model how to perform and behave so some parameters are there below.
