@@ -1,0 +1,11 @@
+topics will cover 
+
+1 generation configuration
+2 history
+3 token count
+4 embeddings
+5 safety settings
+
+
+
+
