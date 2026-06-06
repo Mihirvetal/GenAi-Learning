@@ -47,4 +47,6 @@ Summary in Table
 
 
 
+History:
 
+How to save the chat history.
