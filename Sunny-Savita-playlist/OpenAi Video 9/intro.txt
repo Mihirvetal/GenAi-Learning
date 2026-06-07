@@ -52,3 +52,14 @@ History:
 How to save the chat history.
 
 will create first chat and add the history parameters in that so it will store the history also
+
+the code for count token in gemini
+import google.genai as genai
+from google.colab import userdata
+GOOGLE_API_KEY = userdata.get('GOOGLE_API_KEY')
+client = genai.Client(api_key=GOOGLE_API_KEY)
+response = client.models.count_token(s
+    model="gemini-2.5-flash",
+    contents="what is rag?"
+)
+print(response.total_tokens)
