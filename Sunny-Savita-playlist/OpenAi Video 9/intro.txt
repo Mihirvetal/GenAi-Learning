@@ -50,3 +50,5 @@ Summary in Table
 History:
 
 How to save the chat history.
+
+will create first chat and add the history parameters in that so it will store the history also
