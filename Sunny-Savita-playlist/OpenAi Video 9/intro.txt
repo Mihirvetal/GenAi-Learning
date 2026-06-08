@@ -63,3 +63,19 @@ response = client.models.count_token(s
     contents="what is rag?"
 )
 print(response.total_tokens)
+
+
+Embeddings: 
+1. What Exactly is an Embedding?Computers don't understand words, emotions, or concepts; they only understand numbers.An embedding is a technique that takes a piece of data (like a word, a sentence, or even an image) and translates it into a long list of numbers, called a vector.  But it’s not just any random list of numbers. These numbers represent coordinates in a massive, multi-dimensional "semantic space" (often hundreds or thousands of dimensions wide).  The Golden Rule of Embeddings: Words or sentences that share a similar meaning are placed close together in this mathematical space. Words that are completely unrelated are placed far apart.2. The Classic Analogy: The "Concept Map"Imagine a giant 3D room where we are hanging words in mid-air based on their characteristics:"King" and "Queen" would float very close to each other because they both represent royalty and humans."Apple" and "Banana" would float together in a completely different corner (the fruit section)."Apple" (the fruit) and "Apple" (the tech company) might sit somewhere in between, pulling toward both electronics and food depending on the context!Because these words have coordinates, we can actually do math on human language. The famous machine learning equation looks like this:$$\text{Vector("King")} - \text{Vector("Man")} + \text{Vector("Woman")} = \text{Vector("Queen")}$$If you subtract the concept of "male" from King, and add the concept of "female", the closest mathematical coordinate in the embedding space lands right on the word Queen.3. Why Do We Need Them in GenAI? (The "Why")Without embeddings, computers only match words exactly. If you search a document for "dog", a basic search engine won't find a sentence that says "The golden retriever barked," because the word "dog" isn't explicitly there.Because an embedding model converts both into vectors, it realizes that "golden retriever" and "dog" are mathematically very close. This enables:Semantic Search: Searching by intent and meaning, not just exact keywords.  RAG (Retrieval-Augmented Generation): Converting your company's PDFs into vectors so an AI can quickly pull the most relevant paragraphs to answer a user's question.Recommendation Systems: Finding movies or products whose descriptions have similar vector representations to things you've liked before.4. What Does the Code Look Like?Since you are following Sunny’s playlist, you’ll likely use Google’s embedding models (gemini-embedding-001). Here is a quick look at how you generate these numbers in the modern SDK:Pythonfrom google import genai
+
+client = genai.Client()
+
+# Generate the embedding vector
+response = client.models.embed_content(
+    model="gemini-embedding-001",
+    contents="What is Retrieval-Augmented Generation?"
+)
+
+# This will print a massive list of numbers (usually 768 to 3,072 numbers long!)
+print(response.embeddings[0].values)
+Each number in that giant list represents a specific "feature" or "trait" of the text that the AI figured out during its training, allowing it to understand context deeper than any dictionary ever could.To see this workflow in a real-world scenario, you can check out this Talk to documents with embeddings guide which explains how Google's native embedding models organize text, images, and documents into a unified vector space.
