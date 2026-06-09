@@ -78,4 +78,4 @@ response = client.models.embed_content(
 
 # This will print a massive list of numbers (usually 768 to 3,072 numbers long!)
 print(response.embeddings[0].values)
-Each number in that giant list represents a specific "feature" or "trait" of the text that the AI figured out during its training, allowing it to understand context deeper than any dictionary ever could.To see this workflow in a real-world scenario, you can check out this Talk to documents with embeddings guide which explains how Google's native embedding models organize text, images, and documents into a unified vector space
+Each number in that giant list represents a specific "feature" or "trait" of the text that the AI figured out during its training, allowing it to understand context deeper than any dictionary ever could.To see this workflow in a real-world scenario, you can check out this Talk to documents with embeddings guide which explains how Google's native embedding models organize text, images, and documents into a unified vector space.
