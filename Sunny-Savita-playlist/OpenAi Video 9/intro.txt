@@ -79,3 +79,37 @@ response = client.models.embed_content(
 # This will print a massive list of numbers (usually 768 to 3,072 numbers long!)
 print(response.embeddings[0].values)
 Each number in that giant list represents a specific "feature" or "trait" of the text that the AI figured out during its training, allowing it to understand context deeper than any dictionary ever could.To see this workflow in a real-world scenario, you can check out this Talk to documents with embeddings guide which explains how Google's native embedding models organize text, images, and documents into a unified vector space.
+
+
+1. Concrete Example: What an Embedding Actually Looks LikeImagine we have three simple sentences:"I love coding in Python.""Writing software is my passion.""The weather is very sunny today."If we pass these sentences through an embedding model, it converts each sentence into a vector (a list of numbers). To keep this example simple, let's pretend our model only outputs 3 numbers (3 dimensions) instead of the thousands it usually does:SentenceEmbedding Vector (Simplified)S1: "I love coding in Python."[0.92, 0.88, 0.12]S2: "Writing software is my passion."[0.89, 0.85, 0.15]S3: "The weather is very sunny today."[0.05, 0.11, 0.95]The Logic Behind the Numbers:Look at the first two numbers in the vectors for S1 and S2. They are highly similar (0.92 vs 0.89 and 0.88 vs 0.85). Why? Because the model recognizes that "coding", "Python", "writing software", and "passion" are all tightly related to the concept of programming.Now look at S3. Its numbers are completely different because "weather" and "sunny" have zero semantic relationship to software development.2. A Practical Real-World Example: Building a Smart Job SearchLet's say you are building a recruitment feature for a job portal. A candidate uploads their resume, and you want to match them to the right job openings—even if they didn't use the exact same keywords.The Problem with Traditional Keyword Search:Candidate's Resume says: "Experienced in building full-stack web applications using React and Node.js."Job Posting A says: "Looking for a MERN developer to scale our platform."Job Posting B says: "Hiring a manual QA engineer for testing web layouts."If you use a basic keyword match (like SQL or Ctrl+F), Job Posting A might get rejected because the words "full-stack", "React", and "Node" do not explicitly match the word "MERN" (MongoDB, Express, React, Node).The Solution using Embeddings:By implementing an embedding workflow, the search becomes instantly intelligent:Pythonfrom google import genai
+import numpy as np
+
+client = genai.Client()
+
+# 1. Generate embeddings for the resume and the job listings
+resume_emb = client.models.embed_content(
+    model="gemini-embedding-001",
+    contents="Experienced in building full-stack web applications using React and Node.js."
+).embeddings[0].values
+
+job_a_emb = client.models.embed_content(
+    model="gemini-embedding-001",
+    contents="Looking for a MERN developer to scale our platform."
+).embeddings[0].values
+
+job_b_emb = client.models.embed_content(
+    model="gemini-embedding-001",
+    contents="Hiring a manual QA engineer for testing web layouts."
+).embeddings[0].values
+
+# 2. Mathematical comparison helper (Cosine Similarity)
+def calculate_similarity(v1, v2):
+    return np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
+
+# 3. Compare the resume against both jobs
+match_score_a = calculate_similarity(resume_emb, job_a_emb)
+match_score_b = calculate_similarity(resume_emb, job_b_emb)
+
+print(f"Match score with Job A (MERN Developer): {match_score_a:.4f}")
+print(f"Match score with Job B (QA Engineer):   {match_score_b:.4f}")
+The Expected Result:Match score with Job A: ~0.88 (Very High Similarity)Match score with Job B: ~0.42 (Low Similarity)Even though the candidate never wrote the word "MERN" on their resume, the embedding model already knows from its training that React + Node.js sits in almost the exact same mathematical neighborhood as MERN.This mathematical comparison is the foundational engine behind RAG (Retrieval-Augmented Generation), semantic search bars, and recommendation engines.
