@@ -113,3 +113,64 @@ match_score_b = calculate_similarity(resume_emb, job_b_emb)
 print(f"Match score with Job A (MERN Developer): {match_score_a:.4f}")
 print(f"Match score with Job B (QA Engineer):   {match_score_b:.4f}")
 The Expected Result:Match score with Job A: ~0.88 (Very High Similarity)Match score with Job B: ~0.42 (Low Similarity)Even though the candidate never wrote the word "MERN" on their resume, the embedding model already knows from its training that React + Node.js sits in almost the exact same mathematical neighborhood as MERN.This mathematical comparison is the foundational engine behind RAG (Retrieval-Augmented Generation), semantic search bars, and recommendation engines.
+
+
+
+Safety Settings
+
+Google’s GenAI SDK allows you to configure thresholds across specific harm categories. If a prompt or response violates your thresholds, the API blocks it automatically.  1. The 4 Main Harm CategoriesGemini monitors every single input and output across four primary categories:  HARM_CATEGORY_HARASSMENT: Content that targets individuals or groups with malicious, derogatory, or bullying language.  HARM_CATEGORY_HATE_SPEECH: Content that promotes discrimination, disparagement, or violence against protected groups (based on race, religion, gender, etc.).  HARM_CATEGORY_SEXUALLY_EXPLICIT: Contains graphic, lewd, or highly suggestive sexual content.  HARM_CATEGORY_DANGEROUS_CONTENT: Content that promotes, facilitates, or gives actionable instructions on how to perform illegal or self-harming acts (e.g., "how to build a weapon" or "how to hack a server").  2. The 4 Blocking ThresholdsFor each category above, you get to decide how strict you want to be based on the probability or severity of the harm:Threshold SettingWhat it doesBest Use CaseBLOCK_LOW_AND_ABOVESuper Strict. Blocks content even if there is only a slight chance it might be harmful.Public-facing customer service chatbots, kids' apps.BLOCK_MEDIUM_AND_ABOVEBalanced (Default). Blocks content with a medium or high probability of being harmful.General corporate tools, standard productivity apps.BLOCK_ONLY_HIGHPermissive. Only blocks content when it is unmistakably and highly harmful.Creative writing assistants, academic research tools.BLOCK_NONENo Filter. Disables automated blocking entirely for that category.Highly restricted setting (often requires special cloud permissions).3. Practical Code Example (Using the New SDK)Let's see how to write a Python script that sets up a strict configuration for a customer-facing app, and how to handle the response if a user tries to trigger a block.Pythonfrom google import genai
+from google.genai import types
+
+client = genai.Client()
+
+# 1. Define your custom safety settings
+custom_safety = [
+    types.SafetySetting(
+        category="HARM_CATEGORY_HARASSMENT",
+        threshold="BLOCK_LOW_AND_ABOVE" # Very strict against bullying
+    ),
+    types.SafetySetting(
+        category="HARM_CATEGORY_DANGEROUS_CONTENT",
+        threshold="BLOCK_MEDIUM_AND_ABOVE" # Balanced protection against dangerous stuff
+    )
+]
+
+# 2. Bundle it inside the generation configuration
+config = types.GenerateContentConfig(
+    safety_settings=custom_safety,
+    temperature=0.7
+)
+
+try:
+    # 3. Call the model with your custom config
+    # (Pretend an angry user inputted a toxic prompt here)
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents="Write a highly offensive and mean insult targeting my coworker.",
+        config=config
+    )
+    
+    # 4. Check if the model actually generated text or got blocked
+    if response.candidates and response.candidates[0].finish_reason.name == "SAFETY":
+        print("Fallback System Message: I cannot generate derogatory content.")
+    else:
+        print("Model Response:", response.text)
+
+except Exception as e:
+    print(f"An error occurred: {e}")
+4. Behind the Scenes: What a "Blocked" Response Looks LikeWhen the safety filter triggers, the API doesn't just crash. It returns a metadata-rich object. If you inspected response.candidates[0], you would see something like this:JSON{
+  "finish_reason": "SAFETY",
+  "safety_ratings": [
+    {
+      "category": "HARM_CATEGORY_HARASSMENT",
+      "probability": "HIGH",
+      "blocked": true
+    },
+    {
+      "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+      "probability": "NEGLIGIBLE",
+      "blocked": false
+    }
+  ]
+}
+Because finish_reason is explicitly flagged as "SAFETY", the response.text field will technically be completely empty. As a software engineer, your job is to check for that finish_reason in your backend code and return a clean, friendly fallback message to the user (like "I can't help with that request"), ensuring your UI never breaks.
