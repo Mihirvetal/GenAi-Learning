@@ -138,7 +138,7 @@ custom_safety = [
 # 2. Bundle it inside the generation configuration
 config = types.GenerateContentConfig(
     safety_settings=custom_safety,
-    temperature=0.7
+    temperature=0.6
 )
 
 try:
