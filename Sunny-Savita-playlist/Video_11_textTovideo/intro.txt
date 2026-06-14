@@ -1,0 +1,68 @@
+Text to video 
+
+models = openai sora, nuwa , coqvideo ,runway gen-2, text2video-zero 
+
+how the generate video
+
+text -> token -> each token -> image -> video
+
+
+types of input :
+
+homogeneous = text to text , image to image
+hetrogenous = text to image , image to text
+
+research paper of transformer: https://arxiv.org/pdf/2306.07303
+
+AGI??? what is agi??
+
+
+
+
+
+
+## 📚 Study Notes: Generative AI Video Generation & AGI
+
+### 1. Types of AI Input/Output Systems (Modalities)
+
+In AI, a "modality" just means a type of data (text, image, audio, video). Sunny categorized how models handle these data types:
+
+* **Homogeneous Models:** The input data format and the output data format are the **exact same**.
+* *Text $\rightarrow$ Text:* ChatGPT, Claude, Gemini (You type a question, you get a written answer).
+* *Image $\rightarrow$ Image:* Upscaling an old photo, or applying a stylized filter to a selfie.
+
+
+* **Heterogeneous (Cross-Modal) Models:** The input data format and the output data format are **different**.
+* *Text $\rightarrow$ Image:* Midjourney, DALL-E 3 (You type a prompt, you get a picture).
+* *Text $\rightarrow$ Video:* Sora, Runway (You type a prompt, you get a moving cinematic scene).
+
+
+
+### 2. How Text-to-Video Generation Actually Works
+
+Your note `text -> token -> each token -> image -> video` is the exact skeleton of the pipeline. Here is the fully fleshed-out engineering breakdown of how that happens:
+
+1. **Text Processing:** The user's text prompt is broken down into **tokens** (numbers that represent words or concepts).
+2. **Semantic Understanding:** A text-encoder (like CLIP) translates those tokens into a mathematical representation of the *meaning* of the prompt.
+3. **Spacetime Patching (The Sora Secret):** Instead of just generating one flat image, modern video models break video down into "spacetime patches." Think of these as 3D blocks of pixels that move through time.
+4. **Frame Generation:** The diffusion model generates multiple images (frames) simultaneously.
+5. **Temporal Consistency:** The hardest part of video AI. The model mathematically enforces rules to ensure that if a cat walks behind a pole in Frame 1, it accurately emerges from the other side in Frame 10 without shape-shifting or flickering.
+
+### 3. Prominent Video Generation Models
+
+* **OpenAI Sora:** The current industry standard. Famous for understanding real-world physics and maintaining object permanence.
+* **Runway Gen-2:** A massive commercial player, heavily used by filmmakers for b-roll and stylized generation.
+* **Others in the space:** NUWA, CogVideo, Text2Video-Zero (These represent the rapid open-source and academic research pushing the boundaries).
+
+---
+
+### 🧠 The Big Question: What is AGI?
+
+**AGI** stands for **Artificial General Intelligence**.
+
+To understand AGI, you have to look at what we currently have: **ANI (Artificial Narrow Intelligence)**. Every AI model today—including Gemini, ChatGPT, and Sora—is Narrow AI. They are highly specialized. Sora can generate a hyper-realistic video, but it cannot write a Python script or drive a car.
+
+**AGI is the hypothetical future threshold where an AI can learn, understand, and apply intelligence across *any* domain at a level equal to or greater than a human being.** An AGI would be a single system that could write your MERN stack code, seamlessly pilot a drone, solve a novel math theorem, and invent a new recipe, all using the same underlying reasoning engine.
+
+**Why was AGI mentioned in a video about Sora?**
+When OpenAI released Sora, the tech world was shocked because the model wasn't just pasting pixels together; it appeared to be *simulating the physics of the real world* (gravity, lighting, object permanence) just from reading text. Many researchers believe that an AI building a "world model" (understanding how physical reality works) is one of the final required stepping stones to achieving true AGI.
