@@ -2,6 +2,6 @@
 *.env
 
 OpenAi Video 6/.env
-
+.env
 Video 10 QA System/ -venv
 Video 10 QA System/ .env
