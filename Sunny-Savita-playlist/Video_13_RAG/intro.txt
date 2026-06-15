@@ -1,0 +1,196 @@
+(1) RAG = retrieval augmented generation means to give the LLM information from outside which that LLM dont have 
+
+so we have three types here like 
+
+(2) 
+
+ingestion
+retrieval
+generation
+
+ingestion- to inject the data in the form of vectore in vectore db
+so data flow will look like
+Data > chunk the data > embedding the data to vector > store in db with indexing
+so this is how ingestion is happening 
+
+Retrieval - retrieval means to get the data from the db with the help of user prompt 
+so data flow
+user prompt > chunk the query > vector the query > search same in db with sementic search index > send that top matching data to LLM > LLM will update the user with proper data
+
+Generation- generation means with the given data from vector the LLM generate the output for the user
+
+
+how to find similarity of vector:
+
+1 dot product
+2 cosine similarity
+3 eculian distance
+4 jaccard similarity
+
+
+dot product= so the similarity we will get zzero in the vector
+The Correction: * If the Dot Product or Cosine Similarity is Zero ($0$), it means the vectors are completely orthogonal (at a 90-degree angle)—meaning the texts have absolutely nothing in common (e.g., "Python programming" vs. "How to bake a cake").If the vectors are highly similar, the dot product will be a high positive number (or exactly $1$ for normalized cosine similarity).Euclidean Distance works the opposite way: a distance of Zero ($0$) means the vectors are in the exact same spot (100% identical).
+
+
+
+(3) end to end rag pipeline
+
+
+same like ingestion retrieval and generation 
+data > chunking > embedding > vector indexing > reterival
+
+
+so embeddings
+
+- type of embeddings
+
+    frequency based freq
+    BOW
+    TF-IDF
+    N-grams
+
+    2 neural network based embeddings
+    word2vec
+    fast text
+    bert
+    elmo
+    openai embeddings
+    gemini embeddings 
+
+
+vector embedding indexing: 
+
+
+types of db
+
+vector - it store the vector in db and it is to fast retriveal of db from vectore= db
+
+graph - 
+regural sql db
+
+
+
+
+Part-2 : 
+
+- the reterival process
+
+user prompt > chunk the query > vector the query > search same in db with sementic search index > send that top / top-K matching data to LLM > LLM will update the user with proper data
+
+
+ 1 standard naive approach:
+    
+    advantage:
+        fine for small data
+        uniformely in data handeling
+
+    disadvantage
+        limited contextual understanding - the data dont have more context of data
+        potential for subopitmal response
+
+ 2 sentence-window retrieval /small-to-large chunking:
+
+    data > chunk > embedding> top-k data > will connect again with chunk with the data to get the context > 
+
+    
+    during retrieval we retrve the sentence that are most relevant to the query via similarity search and replact the sentence with the full surroundings context (using a statuc sentence-window around the context, implemented by retrieving sentence surroundings the one being originally retrieved)
+
+    advantage:
+        enhanced specifivity in retrival
+        context-rich synthesis
+        balanced approach
+    disadvantage:
+        increased complexity
+
+ 3 auto-merging retreiver / hierarchical retriever:
+
+    Auto-merging retrieval aims to combine (or merge) information from multiple sources or segments of text to create a
+    more comprehensive and contextually relevant response to a query. This approach is particularly useful when no single
+    document or segment fully answers the query but rather the answer lies in combining information from multiple sources.
+    It allows smaller chunks to be merged into bigger parent chunks. It does this via the following steps:
+    Define a hierarchy of smaller chunks linked to parent chunks.
+    If the set of smaller chunks linking to a parent chunk exceeds some threshold (say, cosine similarity), then "merge"
+    smaller chunks into the bigger parent chunk.
+    The method will finally retrieve the parent chunk for better context.
+
+    Advantages:
+    • Comprehensive Contextual Responses
+    • Reduced Fragmentation
+    • Dynamic Content Integration
+    Disadvantages:
+    • Complexity in Hierarchy and Threshold Management
+    • Risk of Overgeneralization
+    • Computational Intensity
+
+
+
+
+
+
+4 ensemble retrieval and Re-Ranking:  (advance rag concept): 
+    to collect the data from different sources and merge all data and add all in the 1 db.
+    
+    What you wrote: "to collect the data from different sources and merge all data and add all in the 1 db."
+
+    The Core Concept: Ensemble retrieval isn't just about mixing data sources; it's about mixing search algorithms. Usually, it combines Sparse Retrieval (BM25 / Keyword Search) with Dense Retrieval (Vector / Semantic Search).
+
+    The Flow: 1. The user asks a question.
+    2. Algorithm A searches using exact keywords (great for product IDs, specific names, dates).
+    3. Algorithm B searches using vector embeddings (great for general meaning and concepts).
+    4. They both spit out their top results.
+    5. The Re-ranker (like Cohere Rerank or BGE-Rerank) acts as a judge. It takes all those mixed results, recalculates which ones actually answer the user's prompt best, re-orders them, and sends only the absolute best context to the LLM.
+
+    all data from diff source > vector db > re-ranking(reranker) > add to LLM
+
+
+
+Generation: 
+
+simple only there is no type of generation will do with simple user query
+
+
+Benifits of RAG:
+• with RAG, the LLM is able to leverage knowledge and information that is not necessarily in its weights, providing it
+access to external knowledge bases.
+• Improved relevance and accuracy:
+• Handling open-domain queries:
+• Reduced generation bias:
+• Multi-modal capabilities:
+• image captioning, content summarization
+• Human-Al Collaboration:
+• RAG doesn't require model retraining, saving time and computational resources.
+
+  
+Disadvantage;
+RAG's performance depends on the comprehensiveness and correctness of the retriever's knowledge base.
+Information Loss
+If we look at the chain of processes in the RAG system:
+1. Chunking the text and generating embedding for the chunks
+2. Retrieving the chunks by semantic similarity search
+3. Generate response based on the text of the top_k chunks
+
+
+
+
+RAG libraries and frameworks
+Build your on RAG from scratch
+Lang chain 
+Llama Index
+Haystack: End-to-end RAG framework for document search provided by Deepset
+REALM: Retrieval Augmented Language Model (REALM) training is a Google toolkit
+open-domain question answering with RAG.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
