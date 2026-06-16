@@ -1,0 +1,44 @@
+# 1. Correct Modular Package Installations
+%pip install llama-index-core llama-index-llms-huggingface llama-index-embeddings-huggingface torch transformers
+
+import torch
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, PromptTemplate
+from llama_index.llms.huggingface import HuggingFaceLLM
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+
+# 2. Modern Configuration Object (Replaces ServiceContext)
+from llama_index.core import Settings
+
+# 3. Define LLM Prompts
+system_prompt = """<|SYSTEM|># You are a Q&A assistant. Your goal is to answer questions as
+accurately as possible based on the instructions and context provided.
+"""
+query_wrapper_prompt = PromptTemplate("<|USER|>{query_str}<|ASSISTANT|>")
+
+# 4. Initialize Local Mistral-7B
+llm = HuggingFaceLLM(
+    context_window=4096,
+    max_new_tokens=256,
+    generate_kwargs={"temperature": 0.7, "do_sample": False},
+    system_prompt=system_prompt,
+    query_wrapper_prompt=query_wrapper_prompt,
+    tokenizer_name="mistralai/Mistral-7B-Instruct-v0.1",
+    model_name="mistralai/Mistral-7B-Instruct-v0.1",
+    device_map="auto",
+    stopping_ids=[50278, 50279, 50277, 1, 0],
+    tokenizer_kwargs={"max_length": 4096},
+    model_kwargs={"torch_dtype": torch.float16} # Runs in FP16 to save VRAM
+)
+
+# 5. Initialize Embeddings
+embed_model = HuggingFaceEmbedding(model_name="sentence-transformers/all-mpnet-base-v2")
+
+# 6. Apply Settings Globally (The Modern Way)
+Settings.llm = llm
+Settings.embed_model = embed_model
+Settings.chunk_size = 1024
+
+# 7. Assuming 'documents' were loaded via SimpleDirectoryReader earlier:
+# index = VectorStoreIndex.from_documents(documents)
+# query_engine = index.as_query_engine()
+# response = query_engine.query("what is attention?")

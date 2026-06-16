@@ -1,0 +1,103 @@
+import os
+from getpass import getpass
+from datasets import load_dataset
+from haystack import Document, Pipeline
+from haystack.document_stores.in_memory import InMemoryDocumentStore
+from haystack.components.embedders import SentenceTransformersDocumentEmbedder, SentenceTransformersTextEmbedder
+from haystack.components.retrievers.in_memory import InMemoryEmbeddingRetriever
+from haystack.components.builders import PromptBuilder
+from haystack.components.generators import OpenAIGenerator
+
+# ==========================================
+# STEP 1: AUTHENTICATION & ENVIRONMENT SETUP
+# ==========================================
+# Securely fetch the OpenAI API key if it isn't already set in the environment.
+if "OPENAI_API_KEY" not in os.environ:
+    os.environ["OPENAI_API_KEY"] = getpass("OpenAI API Key: ")
+
+# ==========================================
+# STEP 2: KNOWLEDGE BASE INGESTION (THE BRAIN)
+# ==========================================
+# Initialize an ephemeral vector database running directly in system RAM.
+# This store acts as our knowledge vault.
+document_store = InMemoryDocumentStore()
+
+# Download a third-party dataset containing information on the Seven Wonders.
+dataset = load_dataset('bilgeyucel/seven-wonders', split='train')
+
+# Transform raw text dictionary maps into structured Haystack Document objects.
+# We explicitly retain 'meta' data so the LLM can reference source attributes later.
+docs = [Document(content=doc['content'], meta=doc['meta']) for doc in dataset]
+
+# Initialize a local embedding model. 'all-MiniLM-L6-v2' maps raw text into 
+# a 384-dimensional vector space where semantic meanings cluster together.
+doc_embedder = SentenceTransformersDocumentEmbedder(model="sentence-transformers/all-MiniLM-L6-v2")
+
+# Warm up allocating model weights to your active hardware execution unit (CPU/GPU).
+doc_embedder.warm_up()
+
+# Process documents through the embedding layer and commit them to storage.
+docs_with_embedding = doc_embedder.run(docs)
+document_store.write_documents(docs_with_embedding['documents'])
+
+# ==========================================
+# STEP 3: INITIALIZING PIPELINE COMPONENTS
+# ==========================================
+# Component A: Converts incoming user text queries into vector numbers.
+text_embedder = SentenceTransformersTextEmbedder(model="sentence-transformers/all-MiniLM-L6-v2")
+text_embedder.warm_up()
+
+# Component B: Searches the database for matching vectors.
+retriever = InMemoryEmbeddingRetriever(document_store)
+
+# Component C: Dynamically builds the final structured instructions.
+# Uses Jinja2 looping syntax to cleanly isolate distinct document sections.
+template = """
+Given the following information, answer the question.
+Context :
+{% for document in documents %}
+    {{ document.content }}
+{% endfor %}
+
+Question: {{question}}
+Answer :
+"""
+prompt_builder = PromptBuilder(template=template)
+
+# Component D: Passes the constructed prompt straight to the OpenAI API endpoint.
+generator = OpenAIGenerator(model='gpt-3.5-turbo')
+
+# ==========================================
+# STEP 4: WIRING THE INFERENCE PIPELINE GRAPH
+# ==========================================
+basic_rag_pipeline = Pipeline()
+
+# Declare components into the internal execution lifecycle manager
+basic_rag_pipeline.add_component("text_embedder", text_embedder)
+basic_rag_pipeline.add_component("retriever", retriever)
+basic_rag_pipeline.add_component("prompt_builder", prompt_builder)
+basic_rag_pipeline.add_component("llm", generator)
+
+# Draw connections between output components and input entry points.
+# 1. Forward the query's vector embedding straight into the vector search engine.
+basic_rag_pipeline.connect("text_embedder.embedding", "retriever.query_embedding")
+# 2. Feed the search result documents directly into the prompt template builder.
+basic_rag_pipeline.connect("retriever", "prompt_builder.documents")
+# 3. Stream the finalized prompt directly into the LLM text generation engine.
+basic_rag_pipeline.connect("prompt_builder", "llm")
+
+# ==========================================
+# STEP 5: PIPELINE INFERENCE EXECUTION
+# ==========================================
+question = "Why did people visit the Temple of Artemis?"
+
+# Run the directed acyclic graph (DAG). We explicitly target input keys 
+# matching the requirements of our entry-point graph nodes.
+response = basic_rag_pipeline.run({
+    "text_embedder": {"text": question}, 
+    "prompt_builder": {"question": question}
+})
+
+# Isolate and extract the final text generation from the execution map.
+print("\n--- Final Answer ---")
+print(response["llm"]["replies"][0])
