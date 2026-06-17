@@ -91,10 +91,10 @@ basic_rag_pipeline.connect("prompt_builder", "llm")
 # ==========================================
 question = "Why did people visit the Temple of Artemis?"
 
-# Run the directed acyclic graph (DAG). We explicitly target input keys 
+# Run the directed acyclic graph (DAG). We explicit target input keys 
 # matching the requirements of our entry-point graph nodes.
 response = basic_rag_pipeline.run({
-    "text_embedder": {"text": question}, 
+    "text_embedder": {"text": question},
     "prompt_builder": {"question": question}
 })
 
