@@ -1,1 +1,1 @@
-video 20
+video 20s
