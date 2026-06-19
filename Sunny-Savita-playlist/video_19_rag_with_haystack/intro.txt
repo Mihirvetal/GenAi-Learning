@@ -95,7 +95,7 @@ question = "Why did people visit the Temple of Artemis?"
 # matching the requirements of our entry-point graph nodes.
 response = basic_rag_pipeline.run({
     "text_embedder": {"text": question},
-    "prompt_builder": {"question": question
+    "prompt_builder": {"question": question}
 })
 
 # Isolate and extract the final text generation from the execution map.
