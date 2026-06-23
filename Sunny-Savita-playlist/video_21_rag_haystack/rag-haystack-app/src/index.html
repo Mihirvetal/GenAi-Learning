@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haystack 2.0 RAG Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen font-sans">
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <header class="border-b border-gray-800 pb-6 mb-8 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-white tracking-tight">📚 Modular RAG Playground</h1>
+                <p class="text-sm text-gray-400 mt-1">Haystack 2.0 + Pinecone + MistralAI + FastAPI</p>
+            </div>
+            <div id="backend-status" class="flex items-center space-x-2 text-xs bg-emerald-950 text-emerald-400 px-3 py-1.5 rounded-full border border-emerald-800">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Backend Online</span>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 gap-8">
+            
+            <section class="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow-xl">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    📥 Data Ingestion Pipeline
+                </h2>
+                <p class="text-sm text-gray-400 mb-4">
+                    Type the exact name of the PDF file currently stored inside your backend's <code class="bg-gray-900 px-1.5 py-0.5 rounded text-amber-400">data/</code> directory to trigger parsing and vector indexing.
+                </p>
+                <div class="flex gap-3">
+                    <input type="text" id="file-name" placeholder="example_document.pdf" 
+                        class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors">
+                    <button onclick="triggerIngestion()" id="ingest-btn"
+                        class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-5 py-2.5 rounded-lg transition-all flex items-center justify-center gap-2 min-w-[140px]">
+                        Start Ingest
+                    </button>
+                </div>
+                <div id="ingest-response" class="mt-4 hidden text-sm p-3 rounded-lg"></div>
+            </section>
+
+            <section class="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow-xl">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    🤖 Ask the RAG Knowledge Base
+                </h2>
+                <div class="space-y-4">
+                    <textarea id="search-query" rows="3" placeholder="Enter your question here based on the ingested documents..."
+                        class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors resize-none"></textarea>
+                    
+                    <button onclick="submitQuery()" id="query-btn"
+                        class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/20">
+                        Submit Query
+                    </button>
+                </div>
+
+                <div id="output-block" class="mt-6 border-t border-gray-700 pt-6 hidden">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Generated Answer:</h3>
+                    <div id="query-response" class="bg-gray-900 border border-gray-700 rounded-lg p-5 text-gray-200 leading-relaxed whitespace-pre-wrap"></div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = "http://127.0.0.1:8000";
+
+        // 1. Ingestion Endpoint Connector
+        async function triggerIngestion() {
+            const fileNameInput = document.getElementById("file-name");
+            const btn = document.getElementById("ingest-btn");
+            const responseDiv = document.getElementById("ingest-response");
+            
+            const fileName = fileNameInput.value.trim();
+            if (!fileName) {
+                alert("Please enter a valid file name.");
+                return;
+            }
+
+            // Set loading state
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loading-spinner"></div> Ingesting...';
+            responseDiv.className = "mt-4 text-sm p-3 rounded-lg bg-gray-900 text-yellow-400 border border-yellow-800";
+            responseDiv.innerText = "Triggering pipeline context verification...";
+            responseDiv.classList.remove("hidden");
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/ingest`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ file_name: fileName })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    responseDiv.className = "mt-4 text-sm p-3 rounded-lg bg-emerald-950/50 text-emerald-400 border border-emerald-800";
+                    responseDiv.innerText = data.message || "Ingestion started securely in the background.";
+                } else {
+                    responseDiv.className = "mt-4 text-sm p-3 rounded-lg bg-rose-950/50 text-rose-400 border border-rose-800";
+                    responseDiv.innerText = `Error: ${data.detail || "Ingestion request configuration failed."}`;
+                }
+            } catch (err) {
+                responseDiv.className = "mt-4 text-sm p-3 rounded-lg bg-rose-950/50 text-rose-400 border border-rose-800";
+                responseDiv.innerText = "Could not reach the FastAPI server. Ensure uvicorn is running.";
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "Start Ingest";
+            }
+        }
+
+        // 2. Query Endpoint Connector
+        async function submitQuery() {
+            const queryInput = document.getElementById("search-query");
+            const btn = document.getElementById("query-btn");
+            const outputBlock = document.getElementById("output-block");
+            const responseDiv = document.getElementById("query-response");
+            
+            const question = queryInput.value.trim();
+            if (!question) {
+                alert("Please enter a question before submitting.");
+                return;
+            }
+
+            // Set loading state
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loading-spinner"></div> Retrieving Context & Synthesizing...';
+            outputBlock.classList.remove("hidden");
+            responseDiv.innerHTML = `<span class="text-gray-500 italic">Embedding query, fetching matching chunks from Pinecone, and generating answer via Mistral...</span>`;
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/query`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ question: question })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    responseDiv.classList.remove("text-rose-400");
+                    responseDiv.innerText = data.answer;
+                } else {
+                    responseDiv.classList.add("text-rose-400");
+                    responseDiv.innerText = `Error: ${data.detail || "Failed to synthesize a response."}`;
+                }
+            } catch (err) {
+                responseDiv.classList.add("text-rose-400");
+                responseDiv.innerText = "Error: Failed to communicate with your local RAG backend platform.";
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "Submit Query";
+            }
+        }
+    </script>
+</body>
+</html>

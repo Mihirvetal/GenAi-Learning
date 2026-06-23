@@ -1,0 +1,25 @@
+rag-haystack-app/
+│
+├── src/
+│   ├── __init__.py
+│   ├── config.py          # Environment variables & constants
+│   ├── ingestion.py       # PDF parsing & Pinecone indexing pipeline
+│   ├── rag_pipeline.py    # Retrieval & LLM Generation pipeline
+│   └── main.py            # FastAPI application routes
+│
+├── data/                  # Drop your source PDFs here
+│
+├── .env                   # API Keys (Pinecone, Mistral/HF)
+└── requirements.txt       # Python dependencies
+
+
+
+step 1 did configuration and dependencies
+
+so added required apis and secrets in the .env
+and added the required packages to install in requirements.txt
+
+
+step 2 data ingestion
+
+
